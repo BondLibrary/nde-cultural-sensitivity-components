@@ -14,7 +14,7 @@ export class ContentAdviceIndicationComponent {
   hasLds06 = false;
 
   ngOnInit() {
-    //console.log('ContentAdviceIndicationComponent ngOnInit:'); // Uncomment these lines to see the hostComponent in the console
+    //console.log('ContentAdviceIndicationComponent ngOnInit:'); // Debug: Log component and inspect the hostComponent input for troubleshooting or checking
     //console.log(this.hostComponent);
 
     const display = this.hostComponent?.display;
