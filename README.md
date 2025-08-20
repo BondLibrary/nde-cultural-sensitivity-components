@@ -1,10 +1,10 @@
-Map the content adivice indication to the nde-record-indications selector in the custom1-module e.g.:
+Map the content adivice indication component to the nde-record-indications selector in the custom1-module e.g.:
 
-import { ContentAdviceIndicationComponent } from '../content-advice-indication/content-advice-indication.component';
+  import { ContentAdviceIndicationComponent } from '../content-advice-indication/content-advice-indication.component';
 
-// Define the map
-export const selectorComponentMap = new Map<string, any>([
+  // Define the map
+  export const selectorComponentMap = new Map<string, any>([
 
-['nde-record-indications-bottom',ContentAdviceIndicationComponent],
+  ['nde-record-indications-bottom',ContentAdviceIndicationComponent],
 
-]);
+  ]);
