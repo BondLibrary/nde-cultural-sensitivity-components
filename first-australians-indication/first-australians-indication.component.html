@@ -1,5 +1,7 @@
-<span *ngIf="hasMatchingSubject" class="record-indication-wrapper">
-    <span class="mat-divider nde-divider mat-divider-vertical"></span>
-      <span class="ContentAdviceIcon"></span>
-      <span class="record-indication text-uppercase">First Australians</span>
-    </span>
+<span *ngIf="hasMatchingSubject$ | async" class="record-indication-wrapper" aria-live="polite">
+  <span class="mat-divider nde-divider mat-divider-vertical"></span>
+  <span class="FirstAustraliansIcon" aria-hidden="true"></span>
+  <span class="record-indication text-uppercase" aria-label="First Australians indicator">
+    First Australians
+  </span>
+</span>
