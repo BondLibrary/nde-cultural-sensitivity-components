@@ -1,9 +1,10 @@
+/* Content advice indicator start */
 .ContentAdviceIcon:before {
     content: "\e153"; /*flag*/
     font-family: 'Material Icons';
-	color: #880000;
+	color:  var(--sys-primary);   
     vertical-align: middle;
-    margin-inline-end: .25rem;
+    /*margin-inline-end: .2rem;*/
     line-height:1;
     display:inline-block;
     font-size: 0.75rem;
