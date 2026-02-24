@@ -1,30 +1,52 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Observable, of } from 'rxjs';
+import { map, distinctUntilChanged, shareReplay, auditTime } from 'rxjs/operators';
+import { NdeStoreService } from '../services/nde-store.service';
 
 @Component({
   selector: 'custom-first-australians-indication',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './first-australians-indication.component.html',
-  styleUrl: './first-australians-indication.component.scss'
+  styleUrl: './first-australians-indication.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FirstAustraliansIndicationComponent {
-  @Input() hostComponent!: any;
+  @Input() hostComponent: any = {};
 
-  hasMatchingSubject = false;
+  // Reactive flag for template
+  hasMatchingSubject$: Observable<boolean> = of(false);
+
+  private readonly targetPatterns = [
+    /\baboriginal australians?\b/i,
+    /\btorres strait islanders?\b/i,
+  ];
+
+  constructor(private storeSvc: NdeStoreService) {}
 
   ngOnInit() {
-    //console.log('FirstAustraliansComponent ngOnInit:');  // Debug: Log component and inspect the hostComponent input for troubleshooting or checking
-    //console.log(this.hostComponent);
+    // Record stream emits whenever the store advances to a new selected record
+    const record$ = this.storeSvc.getRecord$(this.hostComponent).pipe(
+      // Defer to next microtask so we compute after store settles (fixes first-step lag)
+      auditTime(0),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
 
-    const display = this.hostComponent?.display;
-    const subject: string[] = display?.subject || [];
+   // Checks for the presence of subjects in the host component's display data
+    this.hasMatchingSubject$ = record$.pipe(
+      map((record) => {
+        const subjects: string[] =
+          this.hostComponent?.display?.subject ??
+          [];
 
-    const targetValues = ['Aboriginal Australian', 'Torres Strait Islander'];
-
-    this.hasMatchingSubject = subject.some(entry =>
-      targetValues.some(value => entry.includes(value))
+        return Array.isArray(subjects)
+          ? subjects.some((s) =>
+              this.targetPatterns.some((rx) => rx.test((s ?? '').trim()))
+            )
+          : false;
+      }),
+      distinctUntilChanged()
     );
   }
-
 }
