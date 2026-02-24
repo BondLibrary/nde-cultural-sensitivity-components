@@ -1,25 +1,46 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Observable, of } from 'rxjs';
+import { map, distinctUntilChanged, shareReplay, auditTime } from 'rxjs/operators';
+import { NdeStoreService } from '../services/nde-store.service';
 
 @Component({
   selector: 'custom-content-advice-indication',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './content-advice-indication.component.html',
-  styleUrls: ['./content-advice-indication.component.scss']
+  styleUrls: ['./content-advice-indication.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContentAdviceIndicationComponent {
   @Input() hostComponent!: any;
 
-  hasLds06 = false;
+  // Reactive flag used in the template
+  hasContentAdvice$: Observable<boolean> = of(false);
+
+  constructor(private storeSvc: NdeStoreService) {}
 
   ngOnInit() {
-    //console.log('ContentAdviceIndicationComponent ngOnInit:'); // Debug: Log component and inspect the hostComponent input for troubleshooting or checking
-    //console.log(this.hostComponent);
+    // Record stream: emits whenever Fullview selected record or Listview row record changes
+    const record$ = this.storeSvc.getRecord$(this.hostComponent).pipe(
+      // Defer to next microtask so we compute *after* the store settles to the new record
+      auditTime(0),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
 
-    const display = this.hostComponent?.display;
-    if (display?.lds06) {
-      this.hasLds06 = true;
-    }
+    this.hasContentAdvice$ = record$.pipe(
+      map((record) => this.computeHasLds06(record)),
+      distinctUntilChanged()
+    );
   }
+
+  // Checks for the presence of lds06 in the host component's display data
+
+  private computeHasLds06(record: any): boolean {
+    const lds06 =
+      this.hostComponent?.display?.lds06 ??
+      null;
+
+  return !!lds06;
+}
 }
