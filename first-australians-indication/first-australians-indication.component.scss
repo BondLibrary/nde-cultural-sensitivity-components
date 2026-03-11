@@ -1,9 +1,8 @@
 .FirstAustraliansIcon:before {
     content: "\e7ed"; /*communities icon*/
-    font-family: 'Material Symbols Outlined';
+    font-family: 'Material Symbols Outlined'; /* Material Symbols Outlined font family is linked as an external resource in customModule > src > index.html */
 	color: var(--sys-primary);   
     vertical-align: middle;
-    /*margin-inline-end: .2rem;*/
     line-height:1;
     display:inline-block;
     font-size: 0.75rem;
